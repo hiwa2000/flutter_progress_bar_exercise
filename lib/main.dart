@@ -159,6 +159,79 @@
 
 
 
+// import 'dart:async';
+// import 'dart:math';
+// import 'package:flutter/material.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: MyHomePage(),
+//     );
+//   }
+// }
+
+// class MyHomePage extends StatefulWidget {
+//   @override
+//   _MyHomePageState createState() => _MyHomePageState();
+// }
+
+// class _MyHomePageState extends State<MyHomePage> {
+//   String _displayText = '';
+
+//   Future<void> _rollDice() async {
+//     try {
+//       await Future.delayed(Duration(seconds: 2));
+//       var random = Random();
+//       var diceResult = random.nextInt(6) + 1;
+//       if (random.nextBool()) {
+//         throw 'Würfelwurf Fehler';
+//       }
+//       setState(() {
+//         _displayText = 'Ergebnis: $diceResult';
+//       });
+//     } catch (error) {
+//       setState(() {
+//         _displayText = 'Fehler: $error';
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Würfelwurf'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             ElevatedButton(
+//               onPressed: () {
+//                 setState(() {
+//                   _displayText = 'Würfel wird geworfen...';
+//                 });
+//                 _rollDice();
+//               },
+//               child: Text('Würfeln'),
+//             ),
+//             SizedBox(height: 20),
+//             Text(_displayText),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+//FutureBuilder
+
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -182,31 +255,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _displayText = '';
-
-  Future<void> _rollDice() async {
-    try {
-      await Future.delayed(Duration(seconds: 2));
-      var random = Random();
-      var diceResult = random.nextInt(6) + 1;
-      if (random.nextBool()) {
-        throw 'Würfelwurf Fehler';
-      }
-      setState(() {
-        _displayText = 'Ergebnis: $diceResult';
-      });
-    } catch (error) {
-      setState(() {
-        _displayText = 'Fehler: $error';
-      });
+  Future<int> _rollDice() async {
+    await Future.delayed(Duration(seconds: 2));
+    var random = Random();
+    var diceResult = random.nextInt(6) + 1;
+    if (random.nextBool()) {
+      throw 'Würfelwurf Fehler';
     }
+    return diceResult;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Würfelwurf'),
+        title: Text('Dice Roller'),
       ),
       body: Center(
         child: Column(
@@ -214,15 +277,26 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  _displayText = 'Würfel wird geworfen...';
-                });
-                _rollDice();
+                // Trigger the dice roll when the button is pressed
+                setState(() {});
               },
-              child: Text('Würfeln'),
+              child: Text('Roll Dice'),
             ),
             SizedBox(height: 20),
-            Text(_displayText),
+            FutureBuilder<int>(
+              future: _rollDice(),
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Text('Würfel wird geworfen...');
+                } else if (snapshot.hasError) {
+                  return Text('Fehler: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  return Text('Ergebnis: ${snapshot.data}');
+                } else {
+                  return Container(); // Placeholder widget
+                }
+              },
+            ),
           ],
         ),
       ),
