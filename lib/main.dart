@@ -89,6 +89,76 @@
 // }
 
 
+// import 'dart:async';
+// import 'dart:math';
+// import 'package:flutter/material.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: MyHomePage(),
+//     );
+//   }
+// }
+
+// class MyHomePage extends StatefulWidget {
+//   @override
+//   _MyHomePageState createState() => _MyHomePageState();
+// }
+
+// class _MyHomePageState extends State<MyHomePage> {
+//   String _displayText = '';
+
+//   Future<int> _rollDice() async {
+//     await Future.delayed(Duration(seconds: 2));
+//     var random = Random();
+//     var diceResult = random.nextInt(6) + 1;
+//     return diceResult;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Dice Roller'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             ElevatedButton(
+//               onPressed: () {
+//                 setState(() {
+//                   _displayText = 'Würfel wird geworfen...';
+//                 });
+//                 _rollDice().then((value) {
+//                   setState(() {
+//                     _displayText = 'Ergebnis: $value';
+//                   });
+//                 }).catchError((error) {
+//                   setState(() {
+//                     _displayText = 'Fehler: $error';
+//                   });
+//                 });
+//               },
+//               child: Text('Würfeln'),
+//             ),
+//             SizedBox(height: 20),
+//             Text(_displayText),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -114,18 +184,29 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _displayText = '';
 
-  Future<int> _rollDice() async {
-    await Future.delayed(Duration(seconds: 2));
-    var random = Random();
-    var diceResult = random.nextInt(6) + 1;
-    return diceResult;
+  Future<void> _rollDice() async {
+    try {
+      await Future.delayed(Duration(seconds: 2));
+      var random = Random();
+      var diceResult = random.nextInt(6) + 1;
+      if (random.nextBool()) {
+        throw 'Würfelwurf Fehler';
+      }
+      setState(() {
+        _displayText = 'Ergebnis: $diceResult';
+      });
+    } catch (error) {
+      setState(() {
+        _displayText = 'Fehler: $error';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dice Roller'),
+        title: Text('Würfelwurf'),
       ),
       body: Center(
         child: Column(
@@ -136,15 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   _displayText = 'Würfel wird geworfen...';
                 });
-                _rollDice().then((value) {
-                  setState(() {
-                    _displayText = 'Ergebnis: $value';
-                  });
-                }).catchError((error) {
-                  setState(() {
-                    _displayText = 'Fehler: $error';
-                  });
-                });
+                _rollDice();
               },
               child: Text('Würfeln'),
             ),
